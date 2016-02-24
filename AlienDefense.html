@@ -68,6 +68,7 @@
 				
 				}
 		
+		// The Main Algo Part 
 		$scope.algo = function(){
 				
 				console.log("Calculating Initial Alien Positions");
@@ -91,7 +92,8 @@
 				var pointCheck = true , dis=0, minRadius = apogeePointDistance , feasiblePoints = [] , y = 0;
 				
 				// Minimum Radius and one optimum Point
-				for(var i=0;i< coords[id].X;i++){
+				for(var i=0;i< coords[id].X;i++)
+				{
 					
 					y = Math.ceil((coords[id].Y * i)/coords[id].X);
 					console.log("Testing with ("+i+","+y+")");
@@ -99,7 +101,7 @@
 					if( y > coords[id].Y ) { break;}
 					
 					dis = Math.ceil(Math.sqrt(((coords[id].X - i)*(coords[id].X - i))+((coords[id].Y - y)*(coords[id].Y - y))));
-										 
+					console.log("Distance :" + dis);					 
 					
 					for(var j=0;j<testCases && pointCheck ;j++){
 					
@@ -112,14 +114,19 @@
 						}
 						
 					}
-					if(pointCheck && dis < minRadius)
-						{minRadius = dis;feasiblePoints.push([i,y]);}
-					}
 					
+					if(pointCheck && dis < minRadius)
+						{	
+						minRadius = dis;
+						feasiblePoints.push([i,y]);
+						console.log("MIN CHECK("+i+","+y+")");
+						}
+					
+					pointCheck  = true;
+				}
 				
-				
-				console.log("Minimum Radius : " + minRadius + "  Feasible Point : " + feasiblePoints[0][0]+ " "+feasiblePoints[0][1]);
-				
+				//The minimum Radius and one of the main feasible points
+				console.log("Minimum Radius : " + minRadius + "  Feasible Point : " + feasiblePoints[feasiblePoints.length-1][0]+ " "+feasiblePoints[feasiblePoints.length-1][1]);
 				
 				
 			}
