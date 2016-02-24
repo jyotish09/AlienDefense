@@ -1,0 +1,133 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <title>Alien Defense</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <body>
+    <div class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-brand ">Alien Nuke Operation</div>            
+        </div>
+    </div>
+    <div class="container" ng-controller="Locations"><center>
+	<div class="jumbotron">
+		<div class="form-inline">
+			<label for="N">Number of Co-Oridnates for the Alien Location</label>
+			<input type="text" class="form-control" id="N" placeholder="N" ng-model="N">
+			<button class = "btn btn-primary" ng-if="N" ng-click="create(N)">Test Inputs</button>
+		</div>
+		<br>
+		<br>
+      <div ng-repeat="x in coords">
+		<!-- Input Region {{x}} -->
+		<form class="form-inline">
+		  <div class="form-group">
+			<label >X{{$index+1}}</label>
+			<input type="text" class="form-control"  placeholder="X{{$index+1}}" ng-model='coords[$index].X'>
+		  </div>
+		  
+		  <div class="form-group">
+			<label >Y{{$index+1}}</label>
+			<input type="text" class="form-control"  placeholder="Y{{$index+1}}" ng-model='coords[$index].Y'>
+		  </div>
+		  
+		</form>
+		<br>
+	  </div>
+	  <br>
+	  <button class="btn btn-danger" ng-if="nukeButton" ng-click="algo()">Get Nuke Locations & Radius</button>
+    </div>
+	</div></center>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+     <script type="text/javascript">
+	 
+		var myApp = angular.module("myApp",[]);
+		var testCases='';
+		var arr;
+		var coords;
+	
+		myApp.controller("Locations",function($scope){
+		
+		$scope.create = function(N){
+				//Creating the Co Oridnates Input with Blank Values
+				
+				testCases = N;
+				
+					arr = "[";				
+					if(testCases!='' && testCases ){				
+						for (var i=0;i<testCases-1;i++)
+							{arr += '{"X":"","Y":""},';}
+						arr += '{"X":"","Y":""}';
+						}					
+					arr +="]";
+				
+				coords = JSON.parse(arr);				
+				$scope.coords = coords;
+				
+				$scope.nukeButton="true";
+				
+				}
+		
+		$scope.algo = function(){
+				
+				console.log("Calculating Initial Alien Positions");
+				
+				for(var i=0;i<testCases;i++){
+				console.log("X"+(i+1)+":"+coords[i].X + " " + "Y"+(i+1)+":"+coords[i].Y);
+				}
+				
+				
+				var apogeePointDistance =0, id =0; // For the farthest point from the origin and it's location
+				
+				for(var i=0;i<testCases;i++){					
+					if(Math.ceil(Math.sqrt( coords[i].X*coords[i].X + coords[i].Y*coords[i].Y )) > apogeePointDistance){
+						apogeePointDistance = Math.ceil(Math.sqrt( coords[i].X*coords[i].X + coords[i].Y*coords[i].Y ));
+						id = i;
+					}			
+				}
+				
+				console.log("Farthest From Origin " +"X"+(id+1)+":"+coords[id].X + " " + "Y"+(id+1)+":"+coords[id].Y +"  Distance = "+apogeePointDistance )
+				
+				var pointCheck = true , dis=0, minRadius = apogeePointDistance , feasiblePoints = [] , y = 0;
+				
+				// Minimum Radius and one optimum Point
+				for(var i=0;i< coords[id].X;i++){
+					
+					y = Math.ceil((coords[id].Y * i)/coords[id].X);
+					console.log("Testing with ("+i+","+y+")");
+					
+					if( y > coords[id].Y ) { break;}
+					
+					dis = Math.ceil(Math.sqrt(((coords[id].X - i)*(coords[id].X - i))+((coords[id].Y - y)*(coords[id].Y - y))));
+										 
+					
+					for(var j=0;j<testCases && pointCheck ;j++){
+					
+						if(j == id) {continue;}
+						
+						var disSquare = ((i - coords[j].X)*(i - coords[j].X))+((y - coords[j].Y)*(y - coords[j].Y)) ;
+						
+						if(!(Math.sqrt(disSquare) <= dis)){
+						pointCheck = false;
+						}
+						
+					}
+					if(pointCheck && dis < minRadius)
+						{minRadius = dis;feasiblePoints.push([i,y]);}
+					}
+					
+				
+				
+				console.log("Minimum Radius : " + minRadius + "  Feasible Point : " + feasiblePoints[0][0]+ " "+feasiblePoints[0][1]);
+				
+				
+				
+			}
+			
+			});
+       
+
+
+    </script> 
+  </body>
+</html>
